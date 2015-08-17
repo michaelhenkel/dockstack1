@@ -1,0 +1,78 @@
+common:
+  dnsServer: 10.0.0.1
+  domain: endor.lab
+  galera_password: ladakh1
+  haproxy_password: ladakh1
+  haproxy_user: birdman
+  keystone_admin_password: ladakh1
+  keystone_admin_tenant: admin
+  keystone_admin_token: ladakh1
+  keystone_admin_user: admin
+  puppetServer: puppet1
+  vip: 10.0.0.254
+  vip_mask: 16
+  vip_name: vip
+registered_services:
+  cassandra:
+  - cas1
+  collector:
+  - col1
+  config:
+  - conf1
+  control:
+  - ctrl1
+  dns:
+  - dns1
+  galera:
+  - gal1
+  haproxy:
+  - ha1
+  openstack:
+  - os1
+  puppet:
+  - puppet1
+  webui:
+  - webui1
+services:
+  cassandra:
+    cas1:
+      host: 192.168.1.102
+  collector:
+    col1:
+      host: 192.168.1.102
+  config:
+    conf1:
+      host: 192.168.1.102
+  control:
+    ctrl1:
+      host: 192.168.1.102
+  dns:
+    dns1:
+      gateway: 10.0.0.100
+      host: 192.168.1.102
+      ipaddress: 10.0.0.1/16
+      macAddress: de:ad:be:ef:ba:11
+    dns2:
+      gateway: 10.0.0.100
+      host: 192.168.1.102
+      ipaddress: 10.0.0.2/16
+      macAddress: de:ad:be:ef:ba:12
+  galera:
+    gal1:
+      host: 192.168.1.102
+  haproxy:
+    ha1:
+      host: 192.168.1.102
+    ha2:
+      host: 192.168.1.102
+  openstack:
+    os1:
+      host: 192.168.1.102
+  puppet:
+    puppet1:
+      host: 192.168.1.102
+    puppet2:
+      host: 192.168.1.102
+  webui:
+    webui1:
+      host: 192.168.1.102

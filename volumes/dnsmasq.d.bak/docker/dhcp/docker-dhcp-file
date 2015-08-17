@@ -1,0 +1,17 @@
+de:ad:be:ef:00:01,dns1,10.0.0.100,infinite
+de:ad:be:ef:00:03,ha1,10.0.0.20,infinite
+de:ad:be:ef:01:02,gal1,10.0.1.2,infinite
+de:ad:be:ef:01:03,gal2,10.0.1.3,infinite
+de:ad:be:ef:01:04,gal3,10.0.1.4,infinite
+de:ad:be:ef:02:02,os1,10.0.2.2,infinite
+de:ad:be:ef:02:03,os2,10.0.2.3,infinite
+de:ad:be:ef:02:04,os3,10.0.2.4,infinite
+de:ad:be:ef:03:02,cas1,10.0.3.2,infinite
+de:ad:be:ef:04:02,conf1,10.0.4.2,infinite
+de:ad:be:ef:05:02,col1,10.0.5.2,infinite
+de:ad:be:ef:06:02,ctrl1,10.0.6.2,infinite
+de:ad:be:ef:07:02,webui1,10.0.7.2,infinite
+de:ad:be:ef:08:02,puppet1,10.0.8.2,infinite
+86:21:2b:0f:f8:b9,ha2,10.0.93.48,infinite
+de:ad:be:ef:ba:11,dns1,10.0.0.1,infinite
+6a:85:b8:a2:3e:88,puppet2,10.0.187.136,infinite

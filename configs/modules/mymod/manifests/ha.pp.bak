@@ -1,0 +1,495 @@
+class mymod::ha (
+       $auth_string = join(["auth  ",$ha_user,":",$ha_pwd],'')
+) inherits mymod::params {
+  $vip 				= hiera('common::vip','')
+  $vip_mask 			= hiera('common::vip_mask','')
+  $vip_name 			= hiera('common::vip_name','')
+  $domain 			= hiera('common::domain','')
+  $galera_nodes 		= hiera('common::galera_nodes','')
+  $openstack_nodes 		= hiera('common::openstack_nodes','')
+  $cassandra_nodes 		= hiera('common::cassandra_nodes','')
+  $config_nodes 		= hiera('common::config_nodes','')
+  $control_nodes 		= hiera('common::control_nodes','')
+  $collector_nodes 		= hiera('common::collector_nodes','')
+  $webui_nodes 			= hiera('common::webui_nodes','')
+  $keystone_admin_user 		= hiera('common::keystone_admin_user','')
+  $keystone_admin_tenant 	= hiera('common::keystone_admin_tenant','')
+  $keystone_admin_password 	= hiera('common::keystone_admin_password','')
+  $haproxy_user 		= hiera('haproxy::user','')
+  $haproxy_password 		= hiera('haproxy::password','')
+  class { 'haproxy':
+       global_options   => {
+          'log'           => "127.0.0.1 local2",
+          'chroot'        => '/var/lib/haproxy',
+          'pidfile'       => '/var/run/haproxy.pid',
+          'maxconn'       => '4000',
+          'user'          => 'haproxy',
+          'group'         => 'haproxy',
+          'daemon'        => '',
+    	   stats       => [
+                'socket /var/lib/haproxy/stats mode 600 level admin',
+           ]
+       },
+       defaults_options => {
+	  'source'  => $vip,
+          'log'     => 'global',
+          'stats'   => 'enable',
+          'option'  => 'redispatch',
+          'retries' => '3',
+          'timeout' => [
+                  'http-request 20min',
+                  'queue 1m',
+                  'connect 20min',
+                  'client 20min',
+                  'server 20min',
+                  'check 10s',
+          ],
+          'maxconn' => '8000',
+    	   stats       => [
+        	'enable',
+        	'show-legends',
+        	'refresh 5s',
+        	'uri /',
+        	'realm Haproxy\ Statistics',
+        	$auth_string,
+		#'stats timeout 2m'
+        	#'admin if TRUE',
+    	  ]
+      },
+      restart_command => 'killall haproxy && service haproxy start',
+  }
+  haproxy::listen { 'haproxy-monitoring':
+    mode 	=> 'http',
+    ipaddress	=> '0.0.0.0',
+    ports	=> '8080',
+  }
+  haproxy::frontend { 'galera':
+    mode 	=> 'tcp',
+    ipaddress	=> '0.0.0.0',
+    ports	=> '3306',
+    options	=> [
+        {'option' 	=> [
+        	'tcpka',
+        	'nolinger',
+        ],
+        'balance'	=> 'source',},
+        { 'default_backend' => 'galera_backend' },
+    ]
+  }
+
+  haproxy::backend { 'galera_backend':
+    options => {
+      'option'  => [
+        'tcpka',
+        'nolinger',
+      ],
+      'balance' => 'source',
+    },
+  }
+
+  haproxy::frontend { 'keystone-int':
+    ipaddress	=> '0.0.0.0',
+    ports	=> '35357',
+    options	=> [
+        {'option' 	=> [
+        	'tcpka',
+        	'httpchk',
+        	'tcplog',
+           ],
+        'balance'	=> 'roundrobin',
+        },
+        { 'default_backend' => 'keystone-int' },
+    ]
+  }
+
+  haproxy::backend { 'keystone-int':
+    options => {
+      'option'  => [
+        'tcpka',
+        'httpchk',
+        'tcplog',
+      ],
+      'balance' => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'keystone-ext':
+    ipaddress   => '0.0.0.0',
+    ports       => '5000',
+    options	=> {
+        'option' 	=> [
+        	'tcpka',
+        	'httpchk',
+        	'tcplog',
+        ],
+        'balance'	=> 'roundrobin',
+    },
+  }
+ 
+  haproxy::listen { 'glance-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '9292',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'glance-registry':
+    ipaddress   => '0.0.0.0',
+    ports       => '9191',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'rabbitmq':
+    mode        => 'tcp',
+    ipaddress   => '0.0.0.0',
+    ports       => '5672',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'nolinger',
+        ],
+        'balance'       => 'leastconn',
+    },
+  }
+
+  haproxy::listen { 'ifmap':
+    mode        => 'tcp',
+    ipaddress   => '0.0.0.0',
+    ports       => '8443',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'nolinger',
+        ],
+        'balance'       => 'leastconn',
+    },
+  }
+
+  haproxy::listen { 'nova-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '8773',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'nova-compute-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '8774',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'neutron-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '9696',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'cinder-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '8776',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'dashboard':
+    ipaddress   => '0.0.0.0',
+    ports       => '80',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'httpchk',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'webui':
+    ipaddress   => '0.0.0.0',
+    ports       => [ '8081', '8143' ],
+    options     => {
+        'option'        => [
+                'tcpka',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'discover':
+    ipaddress   => '0.0.0.0',
+    ports       => '5998',
+    options     => {
+        'option'        => [
+                'nolinger',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  haproxy::listen { 'contrail-api':
+    ipaddress   => '0.0.0.0',
+    ports       => '8082',
+    options     => {
+        'option'        => [
+                'nolinger',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
+  $galera_nodes.each |$index, $val| { if($index== 0) {  
+    haproxy::balancermember { $val:
+      #listening_service => 'galera',
+      server_names      => $val,
+      ipaddresses       => $val,
+      ports             => '3306',
+      options           => [
+          'check',
+          'weight 200',
+          'inter 2000',
+          'rise 2',
+          'fall 3',
+      ]
+    }
+  }else{
+      haproxy::balancermember { $val:
+      listening_service => 'galera',
+      server_names      => $val,
+      ipaddresses       => $val,
+      ports             => '3306',
+      options           => [
+          'check',
+          'weight 200',
+          'inter 2000',
+          'rise 2',
+          'fall 3',
+          'backup',
+      ]
+    }
+  } 
+ 
+  }
+  
+  haproxy::balancermember { $::fqdn:
+    listening_service => 'keystone-int',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '35357',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'keystone-ext':
+    listening_service => 'keystone-ext',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '5000',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'glance-api':
+    listening_service => 'glance-api',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '9292',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'glance-registry':
+    listening_service => 'glance-registry',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '9191',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'rabbitmq':
+    listening_service => 'rabbitmq',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '5672',
+    options           => [
+          'weight 200',
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 3',
+      ]
+  }
+
+  haproxy::balancermember { 'ifmap':
+    listening_service => 'ifmap',
+    server_names      => $config_nodes,
+    ipaddresses       => $config_nodes,
+    ports             => '8443',
+    options           => [
+          'weight 200',
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 3',
+      ]
+  }
+
+  haproxy::balancermember { 'nova-api':
+    listening_service => 'nova-api',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '8773',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'nova-compute-api':
+    listening_service => 'nova-compute-api',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '8774',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'neutron-api':
+    listening_service => 'neutron-api',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '9696',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'cinder-api':
+    listening_service => 'cinder-api',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '8776',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'dashboard':
+    listening_service => 'dashboard',
+    server_names      => $openstack_nodes,
+    ipaddresses       => $openstack_nodes,
+    ports             => '80',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'webui':
+    listening_service => 'webui',
+    server_names      => $webui_nodes,
+    ipaddresses       => $webui_nodes,
+    ports             => ['8080','8143'],
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'discover':
+    listening_service => 'discover',
+    server_names      => $config_nodes,
+    ipaddresses       => $config_nodes,
+    ports             => '9110',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'contrail-api':
+    listening_service => 'contrail-api',
+    server_names      => $config_nodes,
+    ipaddresses       => $config_nodes,
+    ports             => '9100',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+}
+

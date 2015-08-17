@@ -1,0 +1,13 @@
+[DEFAULTS]
+log_local = 1
+log_level = SYS_NOTICE
+#log_category =
+log_file = /var/log/contrail/contrail-snmp-collector.log
+scan_frequency = <%= @snmp_scan_frequency %>
+fast_scan_frequency = <%= @snmp_fast_scan_frequency %>
+http_server_port = 5920
+zookeeper=<%= @registered_cassandra.map{ |ip| "#{ip}:#{@zk_ip_port}" }.join(',') %>
+
+[DISCOVERY]
+disc_server_ip=<%= @vip_name %>
+disc_server_port=5998

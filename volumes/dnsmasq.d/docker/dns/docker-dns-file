@@ -1,0 +1,14 @@
+10.0.0.254  vip.endor.lab
+10.0.1.2 gal1.endor.lab
+10.0.2.2  os1.endor.lab
+10.0.3.2  cas1.endor.lab
+10.0.7.2  webui1.endor.lab
+10.0.4.2  conf1.endor.lab
+10.0.6.2  ctrl1.endor.lab
+10.0.5.2  col1.endor.lab
+10.0.0.20 ha1.endor.lab
+10.0.1.3  gal2.endor.lab
+10.0.1.4  gal3.endor.lab
+10.0.2.3  os2.endor.lab
+10.0.8.2  puppet1.endor.lab
+10.0.56.41 ha2.endor.lab

@@ -1,0 +1,41 @@
+common:
+  dnsServer: 10.0.0.1
+  domain: endor.lab
+  keystone_admin_password: ladakh1
+  keystone_admin_tenant: admin
+  keystone_admin_token: ladakh1
+  keystone_admin_user: admin
+  mask: 16
+  vip: 10.0.0.254
+container:
+  dns:
+    dns1:
+      host: 192.168.1.102
+      ipaddress: 10.0.0.1/16
+      macAddress: de:ad:be:ef:ba:11
+  galera:
+    gal1:
+      host: 192.168.1.102
+  haproxy:
+    ha1:
+      host: 192.168.1.102
+    ha2:
+      host: 192.168.1.102
+  puppet:
+    puppet1:
+      host: 192.168.1.102
+registered_services:
+  cassandra: []
+  collector: []
+  config: []
+  control: []
+  dns:
+  - dns1
+  galera: []
+  haproxy:
+  - ha1
+  - ha2
+  openstack: []
+  puppet:
+  - puppet1
+  webui: []

@@ -1,0 +1,2 @@
+contrail::params::database_minimum_diskGB: 20
+contrail::params::enable_database: True

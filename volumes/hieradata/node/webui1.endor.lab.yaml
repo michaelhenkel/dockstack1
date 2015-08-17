@@ -1,0 +1,9 @@
+contrail::params::storage_enabled: ""
+contrail::params::openstack_ip_list: ['vip']
+contrail::params::config_ip_list: ['conf1']
+contrail::params::control_ip_list: ['ctrl1']
+contrail::params::host_roles: ['webui']
+contrail::params::host_ip: "webui"
+contrail::params::enable_webui: True
+contrail::params::database_ip_list: ['cas1']
+contrail::params::internal_vip: "vip"

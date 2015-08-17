@@ -1,0 +1,10 @@
+mymod::params::vip: "10.0.0.254"
+mymod::params::vip_mask: "16"
+mymod::params::ha_user: "birdman"
+mymod::params::ha_pwd: "ladakh1"
+mymod::params::galera_nodes: ['gal1']
+mymod::params::openstack_nodes: ['os1']
+mymod::params::config_nodes: ['conf1','conf2']
+mymod::params::ha_nodes: ['ha1']
+mymod::params::webui_nodes: ['webui1']
+mymod::params::galera_pwd: "ladakh1"

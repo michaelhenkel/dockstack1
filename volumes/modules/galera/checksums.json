@@ -1,0 +1,23 @@
+{
+  "Gemfile": "0a15cbfea6c8370d1f1c52fcebefd9e5",
+  "LICENSE": "0e5ccf641e613489e66aa98271dbe798",
+  "README.md": "6ad8f6876f98c14136aa3636de70f173",
+  "Rakefile": "eb5985a452ff35c9a7e604b0494e40c5",
+  "Vagrantfile": "6501e0f552da90e4f5dd156909f593fe",
+  "examples/site.pp": "09c020df1637e42a390ce984e3180dd3",
+  "manifests/debian.pp": "3782268eaa1280cd2eba5197d65aa7f6",
+  "manifests/firewall.pp": "e372b9db2025758dc7b8268ec6bc5f0a",
+  "manifests/init.pp": "8a684f5c8daf565bbe17adc5b786e092",
+  "manifests/params.pp": "a0f6a7ab53a6844fb6f046e4c50a3134",
+  "manifests/repo.pp": "240ca44d5cb08506c7fe2f5971f589b4",
+  "manifests/status.pp": "360e0390334606f3ab66f3ca602a2747",
+  "manifests/validate.pp": "f4d6b14f29b05c6b9f8a5c3e2f350050",
+  "metadata.json": "fc5ba834528bfef40153b4e615bd8e70",
+  "spec/classes/galera_debian_spec.rb": "be407a4e3ffcde87fec0013117f47dbf",
+  "spec/classes/galera_init_spec.rb": "a5acfc76b1ca3af361196659a352094b",
+  "spec/classes/galera_repo_spec.rb": "f883297b5e4845e3d62040b7353f8deb",
+  "spec/shared_examples.rb": "172c63c57efca8c741f297494ed9ef0f",
+  "spec/spec_helper.rb": "41d71ed92d01bb23d52397572e9b24bb",
+  "templates/clustercheck.erb": "daed0b08f9976cc5a59c4975eee92cdf",
+  "templates/debian.cnf.erb": "bcfaa797a70da9310719cf74613c8b45"
+}

@@ -1,0 +1,304 @@
+class mymod::os (
+) inherits mymod::params {
+  $ks_sql = join(["mysql://keystone:",$openstack_pwd,"@",$vip_name,".",$domain,"/keystone"],'')
+  $cinder_sql = join(["mysql://cinder:",$openstack_pwd,"@",$vip_name,".",$domain,"/cinder"],'')
+  $glance_sql = join(["mysql://glance:",$openstack_pwd,"@",$vip_name,".",$domain,"/glance"],'')
+  $nova_sql = join(["mysql://nova:",$openstack_pwd,"@",$vip_name,".",$domain,"/nova"],'')
+  $neutron_sql = join(["mysql://neutron:",$openstack_pwd,"@",$vip_name,".",$domain,"/neutron"],'')
+  $ks_public_endpoint = join(["http://",$vip_name,".",$domain,":5000/"],'')
+  $ks_admin_endpoint = join(["http://",$vip_name,".",$domain,":35357/"],'')
+  notify { "ksql $ks_sql":; }
+
+  file { "/usr/bin/openstack-config":
+    mode   => "740",
+    owner  => root,
+    group  => root,
+    source => "puppet:///modules/mymod/openstack-config"
+  }
+
+  class { 'keystone':
+    catalog_type   => 'sql',
+    admin_token    => $openstack_pwd,
+    database_connection => $ks_sql,
+    rabbit_host => $vip_name,
+  }->
+  
+ class { 'keystone::roles::admin':
+    email        => 'admin@example.com',
+    password     => $openstack_pwd,
+    admin_tenant => 'admin',
+ }->
+
+  class { 'keystone::endpoint':
+    public_address   => $vip_name,
+    admin_address    => $vip_name,
+    internal_address => $vip_name,
+    region           => 'RegionOne'
+  }
+
+  exec { "glance-api identity_uri":
+    command => "openstack-config --set /etc/glance/glance-api.conf keystone_authtoken identity_uri http://$vip_name:35357",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-api rabbit_host":
+    command => "openstack-config --set /etc/glance/glance-api.conf DEFAULT rabbit_host $vip_name",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-api notification_driver":
+    command => "openstack-config --set /etc/glance/glance-api.conf DEFAULT notification_driver noop",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-api paste_deploy":
+    command => "openstack-config --set /etc/glance/glance-api.conf paste_deploy flavor keystone",
+    path    => "/usr/bin/:/bin/",
+  }->
+  class { 'glance::api':
+    verbose           => true,
+    keystone_tenant   => 'services',
+    keystone_user     => 'glance',
+    keystone_password => $openstack_pwd,
+    rabbit_host => $vip_name,
+    database_connection => $glance_sql,
+    auth_type => 'keystone',
+    auth_uri => $ks_public_endpoint,
+    #identity_uri => $ks_private_endpoint,
+  }
+
+  exec { "glance-registry identity_uri":
+    command => "openstack-config --set /etc/glance/glance-registry.conf keystone_authtoken identity_uri http://$vip_name:35357",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-registry auth_uri":
+    command => "openstack-config --set /etc/glance/glance-registry.conf keystone_authtoken auth_uri http://$vip_name:5000/",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-registry admin_pwd":
+    command => "openstack-config --set /etc/glance/glance-registry.conf keystone_authtoken admin_password $openstack_pwd",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-registry rabbit_host":
+    command => "openstack-config --set /etc/glance/glance-registry.conf DEFAULT rabbit_host $vip_name",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-registry notification_driver":
+    command => "openstack-config --set /etc/glance/glance-registry.conf DEFAULT notification_driver noop",
+    path    => "/usr/bin/:/bin/",
+  }->
+  exec { "glance-api paste_registry":
+    command => "openstack-config --set /etc/glance/glance-registry.conf paste_deploy flavor keystone",
+    path    => "/usr/bin/:/bin/",
+  }->
+  class { 'glance::registry':
+    verbose           => true,
+    keystone_tenant   => 'services',
+    keystone_user     => 'glance',
+    keystone_password => $openstack_pwdA,
+    auth_uri	      => $ks_public_endpoint,
+    auth_type => 'keystone',
+    rabbit_host => $vip_name,
+    database_connection => $glance_sql,
+  }
+
+  class { 'glance::backend::file': }
+
+  class { 'glance::keystone::auth':
+    password         => $openstack_pwd,
+    email            => 'glance@example.com',
+    public_address   => $vip_name,
+    admin_address    => $vip_name,
+    internal_address => $vip_name,
+    region           => 'RegionOne',
+  }
+
+
+#  $glance_api_server = join([$vip_name,"9292"],":")
+#  class { 'nova':
+#    database_connection => $nova_sql,
+#    rabbit_password     => 'guest',
+#    image_service       => 'nova.image.glance.GlanceImageService',
+#    glance_api_servers  => $glance_api_server,
+#    verbose             => false,
+#    rabbit_host         => $vip_name,
+#    ensure_package      => 'held',
+#  }
+
+  $nova_url = join(["http://",$vip_name,":8774/v2/%(tenant_id)s",''])
+  $nova_url_ec2 = join(["http://",$vip_name,":8773/v2/%(tenant_id)s",''])
+  class { 'nova::keystone::auth':
+    password			 => $openstack_pwd,
+    service_name                 => 'nova',
+    configure_endpoint_v3	 => false,
+    public_url                   => $nova_url,
+    internal_url                 => $nova_url,
+    admin_url                    => $nova_url,
+    ec2_public_url                    => $nova_url_ec2,
+    ec2_internal_url                    => $nova_url_ec2,
+    ec2_admin_url                    => $nova_url_ec2,
+    region           => 'RegionOne',
+  }
+
+  mymod::setconf { 'nova rabbit host':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'rabbit_host',
+     value         => $vip_name
+  }
+
+    mymod::setconf { 'nova verbose':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'verbose',
+     value         => 'True'
+  }
+
+  mymod::setconf { 'nova rpc rabbit':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'rpc_backend',
+     value         => 'rabbit'
+  }
+
+  mymod::setconf { 'nova rabbit_user':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'rabbit_user',
+     value         => 'guest'
+  }
+
+  mymod::setconf { 'nova rabbit_password':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'rabbit_password',
+     value         => 'guest'
+  }
+
+  mymod::setconf { 'nova authstrat':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'auth_strategy',
+     value         => 'keystone'
+  }
+
+  mymod::setconf { 'nova myip':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'my_ip',
+     value         => $::hostname,
+  }
+
+  mymod::setconf { 'nova vnc_listen':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'vnc_listen',
+     value         => $::hostname,
+  }
+
+  mymod::setconf { 'nova vnc_proxyclient_address':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'DEFAULT',
+     parameter     => 'vnc_proxyclient_address',
+     value         => $::hostname,
+  }
+
+  mymod::setconf { 'nova auth_uri':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'keystone_authtoken',
+     parameter     => 'auth_uri',
+     value         => $ks_public_endpoint,
+  }
+
+  mymod::setconf { 'nova identity_uri':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'keystone_authtoken',
+     parameter     => 'identity_uri',
+     value         => $ks_admin_endpoint
+  }
+
+  mymod::setconf { 'nova admin_tenant_name':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'keystone_authtoken',
+     parameter     => 'admin_tenant_name',
+     value         => 'services'
+  }
+
+  mymod::setconf { 'nova admin_user':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'keystone_authtoken',
+     parameter     => 'admin_user',
+     value         => 'nova',
+  }
+
+  mymod::setconf { 'nova admin_password':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'keystone_authtoken',
+     parameter     => 'admin_password',
+     value         => $openstack_pwd,
+  }
+
+  mymod::setconf { 'nova database connectopn':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'database',
+     parameter     => 'connection',
+     value         => $nova_sql,
+  }
+
+
+  mymod::setconf { 'nova glance host':
+     conf_service  => 'nova',
+     conf_file     => 'nova.conf',
+     section       => 'glance',
+     parameter     => 'host',
+     value         => $vip_name,
+  }
+
+  exec { 'nova db sync':
+        command => 'nova-manage db sync',
+        path    => "/usr/bin/:/bin/",
+      }
+
+  service { "nova-api":
+    ensure => 'running',
+    enable => true,
+  }
+  
+  service { "nova-scheduler":
+    ensure => 'running',
+    enable => true,
+  }
+
+  service { "nova-conductor":
+    ensure => 'running',
+    enable => true,
+  }
+
+  service { "nova-novncproxy":
+    ensure => 'running',
+    enable => true,
+  }
+
+  service { "nova-consoleauth":
+    ensure => 'running',
+    enable => true,
+  }
+
+  service { "nova-cert":
+    ensure => 'running',
+    enable => true,
+  }
+    
+}

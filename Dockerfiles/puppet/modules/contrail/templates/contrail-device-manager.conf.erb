@@ -1,0 +1,12 @@
+[DEFAULTS]
+rabbit_server=<%= @vip_name %>
+api_server_ip=<%= @vip_name %>
+disc_server_ip=<%= @vip_name %>
+api_server_port=8082
+rabbit_port=5672
+zk_server_ip=<%= @registered_cassandra.map{ |ip| "#{ip}:#{@zk_ip_port}" }.join(',') %>
+log_file=/var/log/contrail/contrail-device-manager.log
+cassandra_server_list=<%= @registered_cassandra.map{ |ip| "#{ip}:#{@database_ip_port}" }.join(' ') %>
+disc_server_port=5998
+log_local=1
+log_level=SYS_NOTICE

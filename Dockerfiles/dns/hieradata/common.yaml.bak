@@ -1,0 +1,20 @@
+common:
+  vip: "10.0.0.254"
+  vip_mask: "16"
+  galera_nodes: ['gal1','gal2','gal3']
+  openstack_nodes: ['os1','os2','os3']
+  cassandra_nodes: ['cas1','cas2','cas3']
+  config_nodes: ['conf1','conf2','conf3']
+  control_nodes: ['ctrl1','ctrl2','ctrl3']
+  collector_nodes: ['col1','col2','col3']
+  webui_nodes: ['webui1','webui2','webui3']
+  keystone_admin_user: "admin"
+  keystone_admin_tenant: "admin"
+  keystone_admin_password: "ladakh1"
+galera:
+  password: "ladakh1"
+haproxy:
+  user: "ladakh1"
+  password: "ladakh1"
+  registered_services:
+     galera_nodes: []

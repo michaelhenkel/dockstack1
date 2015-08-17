@@ -1,0 +1,15 @@
+contrail::params::openstack_ip_list: ['vip']
+contrail::params::config_ip_list: ['conf1','conf2','conf3']
+contrail::params::uuid: "2c039029-8ddd-4d8c-95e8-91ed7ad6fc46"
+contrail::params::host_non_mgmt_ip: "10.0.0.14"
+contrail::params::enable_provision_started: False
+contrail::params::database_minimum_diskGB: 20
+contrail::params::control_ip_list: ['ctrl1', 'ctrl2', 'ctrl3']
+contrail::params::host_roles: ['webui']
+contrail::params::host_ip: "webui"
+contrail::params::enable_webui: True
+contrail::params::database_ip_list: ['cas1', 'cas2', 'cas3']
+contrail::params::database_dir: "/var/lib/cassandra"
+contrail::params::internal_vip: "vip"
+contrail::params::database_initial_token: "token"
+

@@ -1,0 +1,14 @@
+contrail::params::config_ip_list: ['conf1']
+contrail::params::host_non_mgmt_ip: "10.0.1.158"
+contrail::params::enable_provision_started: False
+contrail::params::database_minimum_diskGB: 20
+contrail::params::control_ip_list: ['ctrl1', 'ctrl2', 'ctrl3']
+contrail::params::host_roles: ['database']
+contrail::params::host_ip: "10.0.1.158"
+contrail::params::enable_database: True
+contrail::params::database_ip_list: ['10.0.1.158']
+contrail::params::database_dir: "/var/lib/cassandra"
+contrail::params::internal_vip: "10.0.0.254"
+contrail::params::database_initial_token: "token"
+contrail::params::database_index: "1"
+contrail::params::zookeeper_ip_list: ['10.0.1.158']

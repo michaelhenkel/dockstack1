@@ -1,0 +1,17 @@
+---
+:backends:
+  - yaml
+:hierarchy:
+  - common
+  - "node/%{::fqdn}"
+#  - "%{::clientcert}"
+#  - "%{::clientcert}-openstack"
+#  - "%{::clientcert}-contrail"
+
+:yaml:
+# datadir is empty here, so hiera uses its defaults:
+# - /var/lib/hiera on *nix
+# - %CommonAppData%\PuppetLabs\hiera\var on Windows
+# When specifying a datadir, make sure the directory exists.
+#  :datadir: /etc/puppet/environments/%{environment}/hieradata
+  :datadir: /etc/puppet/hieradata

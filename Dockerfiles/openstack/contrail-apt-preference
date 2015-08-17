@@ -1,0 +1,11 @@
+Package: *
+Pin: release a=trusty-updates
+Pin-Priority: 900
+
+Package: *
+Pin: release a=trusty
+Pin-Priority: 899
+
+Package: *
+Pin: release a=contrail
+Pin-Priority: 800

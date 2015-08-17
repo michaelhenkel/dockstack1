@@ -1,0 +1,11 @@
+a2enmod ssl
+a2enmod headers
+apt-get install make
+gem install rack passenger
+apt-get install -y build-essential libcurl4-openssl-dev libssl-dev zlib1g-dev apache2-threaded-dev libapr1-dev libaprutil1-dev
+passenger-install-apache2-module -a
+mkdir -p /usr/share/puppet/rack/puppetmasterd
+mkdir /usr/share/puppet/rack/puppetmasterd/public /usr/share/puppet/rack/puppetmasterd/tmp
+chown puppet:puppet /usr/share/puppet/rack/puppetmasterd/config.ru
+a2ensite puppetmaster
+

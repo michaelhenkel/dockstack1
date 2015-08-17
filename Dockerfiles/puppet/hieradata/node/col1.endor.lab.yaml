@@ -1,0 +1,13 @@
+contrail::params::keystone_admin_user: "admin"
+contrail::params::analytics_syslog_port: -1
+contrail::params::enable_control: True
+contrail::params::keystone_admin_tenant: "admin"
+contrail::params::keystone_admin_password: "ladakh1"
+contrail::params::host_roles: ['config']
+contrail::params::openstack_ip_list: ['vip']
+contrail::params::internal_vip: "vip"
+contrail::params::keystone_ip: "vip"
+contrail::params::keystone_service_token: "ladakh1"
+contrail::params::database_ip_list: ['cas1']
+contrail::params::config_ip_list: ['conf1']
+

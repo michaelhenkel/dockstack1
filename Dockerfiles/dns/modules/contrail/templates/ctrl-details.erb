@@ -1,0 +1,21 @@
+SERVICE_TOKEN=<%= @keystone_admin_token %>
+AUTH_PROTOCOL=<%= @keystone_auth_protocol %>
+QUANTUM_PROTOCOL=<%= @quantum_service_protocol %>
+ADMIN_TOKEN=<%= @keystone_admin_password %>
+CONTROLLER=<%= @vip_name %>
+AMQP_SERVER=<%= @vip_name %>
+<% if @haproxy -%>
+QUANTUM=127.0.0.1
+<% else -%>
+QUANTUM=<%= @quantum_ip %>
+<% end -%>
+QUANTUM_PORT=<%= @quantum_port %>
+COMPUTE=<%= @ipaddress %>
+CONTROLLER_MGMT=<%= @vip_name %>
+VMWARE_IP=<%= @vmware_ip %>
+VMWARE_USERNAME=<%= @vmware_username%>
+VMWARE_PASSWD=<%= @vmware_password%>
+VMWARE_VMPG_VSWITCH=<%= @vmware_vswitch %>
+INTERNAL_VIP=<%= @vip_name %>
+CONTRAIL_INTERNAL_VIP=<%= @vip_name %>
+EXTERNAL_VIP=<%= @vip_name %>

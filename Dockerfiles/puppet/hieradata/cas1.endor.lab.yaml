@@ -1,0 +1,5 @@
+contrail::params::database_minimum_diskGB: 20
+contrail::params::analytics_data_dir: ""
+contrail::params::host_roles: ['database']
+contrail::params::enable_database: True
+contrail::params::database_dir: "/var/lib/cassandra"

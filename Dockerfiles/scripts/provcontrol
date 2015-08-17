@@ -1,0 +1,1 @@
+python  provision_control.py --api_server_ip vip --api_server_port 8082 --host_name ctrl1 --host_ip 10.0.0.9 --router_asn 64512 --oper add --admin_user admin --admin_password ladakh1 --admin_tenant admin

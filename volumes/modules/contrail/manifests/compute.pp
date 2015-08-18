@@ -179,7 +179,7 @@ class contrail::compute (
     $physical_dev = get_device_name("$vhost_ip")
     $contrail_compute_dev = ""
     $contrail_dev_mac = $::macaddress
-    $contrail_dev = $physical_dev
+    $contrail_dev = 'eth0'
     $contrail_macaddr = $contrail_dev_mac
     $contrail_netmask = $::netmask
     $contrail_cidr = convert_netmask_to_cidr($contrail_netmask)

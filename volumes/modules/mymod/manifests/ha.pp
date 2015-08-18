@@ -52,6 +52,36 @@ class mymod::ha (
     ports	=> '8080',
   }
 
+#if (size($registered_collector) > 0 ){
+#  haproxy::listen { 'collector':
+#    mode        => 'tcp',
+#    ipaddress   => '0.0.0.0',
+#    ports       => '8081',
+#    options     => [
+##        {'option'       => [
+#                'tcpka',
+#                'nolinger',
+##        ],
+#        'balance'       => 'source',},
+#    ]
+#  }
+##
+#  haproxy::balancermember { 'collector':
+#    listening_service => 'collector',
+#    server_names      => $registered_collector,
+#    ipaddresses       => $registered_collector,
+#    ports             => '8081',
+#    options           => [
+#          'check',
+#          'inter 2000',
+#          'rise 2',
+#          'fall 5',
+#      ]
+#  }
+#
+#
+#}
+
 if (size($registered_galera) > 0 ){
   haproxy::listen { 'galera':
     mode 	=> 'tcp',
@@ -241,6 +271,18 @@ if (size($registered_openstack) > 0 ){
     },
   }
 
+  haproxy::listen { 'vnc':
+    ipaddress   => '0.0.0.0',
+    ports       => '6080',
+    options     => {
+        'option'        => [
+                'tcpka',
+                'tcplog',
+        ],
+        'balance'       => 'roundrobin',
+    },
+  }
+
   haproxy::balancermember { 'keystone-int':
     listening_service => 'keystone-int',
     server_names      => $registered_openstack,
@@ -377,6 +419,19 @@ if (size($registered_openstack) > 0 ){
     server_names      => $registered_openstack,
     ipaddresses       => $registered_openstack,
     ports             => '80',
+    options           => [
+          'check',
+          'inter 2000',
+          'rise 2',
+          'fall 5',
+      ]
+  }
+
+  haproxy::balancermember { 'vnc':
+    listening_service => 'vnc',
+    server_names      => $registered_openstack,
+    ipaddresses       => $registered_openstack,
+    ports             => '6080',
     options           => [
           'check',
           'inter 2000',

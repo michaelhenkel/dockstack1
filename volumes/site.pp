@@ -28,3 +28,7 @@ node 'webui1.endor.lab' {
   class { '::contrail::common': }
   class { '::contrail::webui': }
 }
+node 'compute1.endor.lab' {
+  class { '::contrail::common': }
+  class { '::contrail::compute': }
+}

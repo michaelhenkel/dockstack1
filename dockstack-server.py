@@ -49,6 +49,10 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/checkDns':
             result = Dns(containerObject).check()
             self.request.sendall(result)
+        if self.path == '/start':
+            result = DockerControl(containerObject).start()
+            result = NameSpace(containerObject).create()
+            self.request.sendall(result)
         if self.path == '/create':
             result = DockerControl(containerObject).create()
             result = NameSpace(containerObject).create()
@@ -57,10 +61,12 @@ class Handler(BaseHTTPRequestHandler):
             if containerObject.type == 'puppet':
                 puppet = Puppet(containerObject)
                 puppet.configPuppet()
+            Puppet(containerObject).registerContainer('add')
             self.request.sendall(result)
         if self.path == '/remove':
             dockerControl=DockerControl(containerObject).remove()
             nameSpace = NameSpace(containerObject).remove()
+            Puppet(containerObject).registerContainer('remove')
             self.request.sendall(json.dumps(containerObject.name + ':removed'))
         if self.path == '/updateDns':
             updateDns = Dns(containerObject).update()
@@ -483,6 +489,21 @@ class DockerControl:
         os.symlink(pidPath, netNsPath)
         return containerInfo
 
+    def start(self):
+        nameString = '/' + self.containerObject.name
+        containerList= self.dockerCli.containers()
+        for container in containerList:
+            if container['Names'][0]==nameString:
+                containerId = container['Id']
+        self.dockerCli.start(container=containerId)
+        containerInfo = self.dockerCli.inspect_container(container=containerId)
+        containerPid = containerInfo['State']['Pid']
+        pidPath = '/proc/' + str(containerPid) + '/ns/net'
+        netNsPath = '/var/run/netns/' + name
+        os.symlink(pidPath, netNsPath)
+        return containerInfo
+        
+
 class NameSpace:
     def __init__(self,containerObject):
         self.containerObject = containerObject
@@ -504,7 +525,11 @@ class NameSpace:
         netns.remove(self.containerName)
         iface = self.containerName + 'veth0'
         subprocess.call(["ovs-vsctl", "del-port", "br0", iface])
-        Puppet(self.containerObject).registerContainer('remove')
+
+    def stop(self):
+        netns.remove(self.containerName)
+        iface = self.containerName + 'veth0'
+        subprocess.call(["ovs-vsctl", "del-port", "br0", iface])
 
     def create(self):
         iface = self.containerName + 'veth0'
@@ -546,7 +571,6 @@ class NameSpace:
         macAddressInfo = addressInfoList[1].split()[1]
         ipAddressInfo = addressInfoList[2].split()[1]
         ipAddressInfoDict = dict({'containerName':self.containerName,'macAddress':macAddressInfo,'ipAddress':ipAddressInfo})
-        Puppet(self.containerObject).registerContainer('add')
         return json.dumps(ipAddressInfoDict)
 
     def execCmd(self, cmd):

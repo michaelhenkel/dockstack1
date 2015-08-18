@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import json
 import yaml
 import socket
@@ -85,6 +87,11 @@ if __name__ == "__main__":
                 containerObject[args.name]['props']['ipaddress'] = result['ipAddress']
                 containerObject[args.name]['props']['macAddress'] = result['macAddress']
 
+    if args.action == 'start':
+        ipAddressInfo = SendHTTPData(data=containerObject,method='POST',host=containerObject[args.name]['props']['host'],action='start').send()
+
+    if args.action == 'stop':
+        ipAddressInfo = SendHTTPData(data=containerObject,method='POST',host=containerObject[args.name]['props']['host'],action='stop').send()
 
     if args.action == 'create':
         ipAddressInfo = SendHTTPData(data=containerObject,method='POST',host=containerObject[args.name]['props']['host'],action=args.action).send()

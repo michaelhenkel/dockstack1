@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import json
 import argparse
 import subprocess
@@ -52,6 +53,14 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == '/start':
             result = DockerControl(containerObject).start()
             result = NameSpace(containerObject).create()
+            if isinstance(result,dict):
+                result = json.dumps(result)
+            self.request.sendall(result)
+        if self.path == '/stop':
+            result = DockerControl(containerObject).stop()
+            result = NameSpace(containerObject).remove()
+            if isinstance(result,dict):
+                result = json.dumps(result)
             self.request.sendall(result)
         if self.path == '/create':
             result = DockerControl(containerObject).create()
@@ -491,7 +500,7 @@ class DockerControl:
 
     def start(self):
         nameString = '/' + self.containerObject.name
-        containerList= self.dockerCli.containers()
+        containerList= self.dockerCli.containers(all=True)
         for container in containerList:
             if container['Names'][0]==nameString:
                 containerId = container['Id']
@@ -499,8 +508,18 @@ class DockerControl:
         containerInfo = self.dockerCli.inspect_container(container=containerId)
         containerPid = containerInfo['State']['Pid']
         pidPath = '/proc/' + str(containerPid) + '/ns/net'
-        netNsPath = '/var/run/netns/' + name
+        netNsPath = '/var/run/netns/' + self.containerObject.name
         os.symlink(pidPath, netNsPath)
+        return containerInfo
+
+    def stop(self):
+        nameString = '/' + self.containerObject.name
+        containerList= self.dockerCli.containers()
+        for container in containerList:
+            if container['Names'][0]==nameString:
+                containerId = container['Id']
+        self.dockerCli.stop(container=containerId)
+        containerInfo = self.dockerCli.inspect_container(container=containerId)
         return containerInfo
         
 

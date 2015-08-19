@@ -111,6 +111,22 @@ in an environment file using the yaml data structure. The file contains generic 
         webui1:
           host: 192.168.99.2
 
+The registered services section lists all running containers, the services section the different docker images with the container using the image 
+and the docker host the container will run on. Optionally an IP address, a default GW and MAC address can be specified per container.
+The name of the service must match the docker image name:
+
+    #>docker images
+    REPOSITORY          TAG                 IMAGE ID            CREATED             VIRTUAL SIZE
+    haproxy             latest              facdaa8d2030        9 days ago          295.9 MB
+    dns                 latest              7466ef508541        9 days ago          261.3 MB
+    puppet              latest              8dd0c5a0142a        9 days ago          382.1 MB
+    webui               latest              c9125b2648a1        13 days ago         520.9 MB
+    control             latest              dea0f627e0e3        13 days ago         525.5 MB
+    collector           latest              c4239dc9d1b3        13 days ago         528.7 MB
+    config              latest              abc5de63e7cd        13 days ago         703 MB
+    cassandra           latest              02ddca950867        13 days ago         703.1 MB
+    openstack           latest              cea138c40256        13 days ago         636.3 MB
+    galera              latest              1db2424aaead        13 days ago         481.6 MB
 
 In the standard Docker setup IP addresses are not persistent, i.e. everytime a container is stopped and restarted or removed and recreated the IP address
 changes. In order to maintain IP address dnsmasq is used. Each container (besides the dnsmasq container itself) receives its IP address from the dnsmasq

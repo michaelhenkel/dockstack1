@@ -253,4 +253,15 @@ So the environment file has three functions:
 2. track running containers
 3. maintain container application configuration information
 
-The puppet modules are written in a way that 
+The puppet modules are written in a way that additions of new or removal of existing containers are reflected
+in the running container application configurations. E.g.
+
+The first galera node is started as the cluster master bootstrapping the cluster using the parameter
+--wresp_cluster_address = gcomm://
+Adding/removing another node requires this parameter to change by adding/removing the created/removed node.
+The same applies to the haproxy configuration as a new balancer-member must be added to the configuration.
+Similiar examples are the cassandra seeds, zookeeper server, control clients in ifmap.
+The configuration updates are achieved by the executing a puppet kick at the end of each puppet module.
+With that the configuration of each application container is dynamic, stays up-to-date and only contains
+necessary configuration items.
+

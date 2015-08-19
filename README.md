@@ -43,59 +43,39 @@ In the standard Docker setup IP addresses are not persistent, i.e. everytime a c
 changes. In order to maintain IP address dnsmasq is used. Each container (besides the dnsmasq container itself) receives its IP address from the dnsmasq
 container and generates a DNS entry.
 
-               +-----------------------------+                
-               |                             |                
-               | has container static MAC/IP |                
-               | in config file?             +---------+      
-               |                             |         |      
-               +-------------+---------------+         |      
-                             |                         |      
-                             v  No                     |      
-                   +---------+------------+            |      
-                   |                      |            |      
-                   | is container name in |            |      
-                +--+ dhcp lease file?     +--+         |      
-                |  |                      |  |         |      
-             No |  +----------------------+  | Yes     |      
-                |                            |         |      
-                |                            |         v      
-     +---------------+---------+         +--------+---------+-----+
-     |                         |         |                        |
-     | start container without |         |  start container with  |
-     | MAC address             |         |  assigned MAC address  |
-     |                         |         |                        |
-     +---------------+---------+         +-----------+------------+
-                |                               |             
-                |                               v             
-                |                   +-----------+------------+
-                |                   |                        |
-                |            No     | static IP in config    |
-                |         +---------+ file?                  |
-                |         |         |                        |
-                |         |         +-----------+------------+
-                |         |                     |             
-                |         v                     v Yes         
-        +-------+---------+---+     +-----------+---------+   
-        |                     |     |                     |   
-        | run dhclient inside |     | configure static IP |   
-        | container           |     |                     |   
-        |                     |     +-----------+---------+   
-        +-------+-------------+                 |             
-                |                               |             
-                |                               |             
-         +------+------------+                  |             
-         |                   |                  |             
-         | retrieve assigned |                  |             
-         | IP and MAC        |                  |             
-         |                   |                  |             
-         +------+------------+                  |             
-                |                               |             
-                |                               |             
-                |    +-----------------+        |             
-                |    |                 |        |             
-                |    | update dns/dhcp |        |             
-                +--->+ file and reload +<-------+             
-                     | dnsmasq         |                      
-                     |                 |                      
-                     +-----------------+                      
- 
+               +---------------------------+               
+               |has container static MAC/IP|               
+               |in config file?            +----------+    
+               +---------------------------+          |    
+                            |No                       |    
+                  +----------------------+        Yes |    
+                  | is containeroname in |            |    
+               +--+ dhcp lease file?     +--+         |    
+               |  +----------------------+  |         |    
+            No |                            | Yes     |    
+   +--------------+--------+            +---+---------+------+
+   |start container without|            |start container with|
+   |MAC address            |            |assigned MAC address|
+   +-----------+-----------+            +------+-------------+
+               |                               |           
+               |                   +-----------+--------+  
+               |            No     | static IP in config|  
+               |         +---------+ file?     |        |  
+               |         |         +--------------------+  
+               |         |                     | Yes       
+        +------+---------+--+       +----------+--------+  
+        |run dhclient inside|       |configure static IP|  
+        |container          |       +----------+--------+  
+        +------+------------+                  |           
+               |                               |           
+         +-----+-----------+                   |           
+         |retrieve assigned|                   |           
+         |IP and MAC       |                   |           
+         +-----+-----------+                   |           
+               |                               |           
+               |     +---------------+         |           
+               |     |update dns/dhcp|         |           
+               +-----+file and reload<---------+           
+                     |dnsmasq        |                     
+                     +---------------+                     
+

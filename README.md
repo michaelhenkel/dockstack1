@@ -320,3 +320,18 @@ now starting the remaining containers (giving each container 30 seconds to confi
     > ./dockstack-client.py --action create --name $i
     > sleep 30
     > done
+
+and after a little bit over 5 minutes the environment is up and running:
+
+    root@docker-dev:/etc/dockerstack# ./dockstack-server.py
+    Serving at: http://192.168.99.2:3288
+    '{"status": "successfully created", "ip": "10.0.0.1/16", "mac": "de:ad:be:ef:ba:11", "container": "dns1", "service": "dns"}'
+    '{"status": "successfully created", "ip": "10.0.8.2", "mac": "de:ad:be:ef:08:02", "container": "puppet1", "service": "puppet"}'
+    '{"status": "successfully created", "ip": "10.0.0.20", "mac": "de:ad:be:ef:00:03", "container": "ha1", "service": "haproxy"}'
+    '{"status": "successfully created", "ip": "10.0.1.2", "mac": "de:ad:be:ef:01:02", "container": "gal1", "service": "galera"}'
+    '{"status": "successfully created", "ip": "10.0.2.2", "mac": "de:ad:be:ef:02:02", "container": "os1", "service": "openstack"}'
+    '{"status": "successfully created", "ip": "10.0.3.2", "mac": "de:ad:be:ef:03:02", "container": "cas1", "service": "cassandra"}'
+    '{"status": "successfully created", "ip": "10.0.4.2", "mac": "de:ad:be:ef:04:02", "container": "conf1", "service": "config"}'
+    '{"status": "successfully created", "ip": "10.0.5.2", "mac": "de:ad:be:ef:05:02", "container": "col1", "service": "collector"}'
+    '{"status": "successfully created", "ip": "10.0.6.2", "mac": "de:ad:be:ef:06:02", "container": "ctrl1", "service": "control"}'
+    '{"status": "successfully created", "ip": "10.0.7.2", "mac": "de:ad:be:ef:07:02", "container": "webui1", "service": "webui"}'

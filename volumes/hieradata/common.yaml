@@ -13,21 +13,26 @@ common:
   vip_mask: 16
   vip_name: vip
 registered_services:
-  cassandra: []
-  collector: []
-  config: []
-  control: []
+  cassandra:
+  - cas1
+  collector:
+  - col1
+  config:
+  - conf1
+  control:
+  - ctrl1
   dns:
   - dns1
   galera:
   - gal1
   haproxy:
   - ha1
-  openstack: []
+  openstack:
+  - os1
   puppet:
   - puppet1
-  - puppet1
-  webui: []
+  webui:
+  - webui1
 services:
   cassandra:
     cas1:

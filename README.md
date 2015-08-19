@@ -53,10 +53,10 @@ container and generates a DNS entry.
                +--+ dhcp lease file?     +--+         |    
                |  +----------------------+  |         |    
             No |                            | Yes     v    
-   +--------------+--------+            +---+---------+------+
-   |start container without|            |start container with|
-   |MAC address            |            |assigned MAC address|
-   +-----------+-----------+            +------+-------------+
+    +--------------+--------+            +---+---------+------+
+    |start container without|            |start container with|
+    |MAC address            |            |assigned MAC address|
+    +-----------+-----------+            +------+-------------+
                |                               |           
                |                   +-----------+--------+  
                |            No     | static IP in config|  

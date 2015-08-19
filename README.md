@@ -49,14 +49,14 @@ container and generates a DNS entry.
                +---------------------------+          |    
                             |No                       |    
                   +----------------------+        Yes |    
-                  | is containeroname in |            |    
+                  | is container name in |            |    
                +--+ dhcp lease file?     +--+         |    
                |  +----------------------+  |         |    
-            No |                            | Yes     v    
-    +--------------+--------+            +---+---------+------+
+            No |                            | Yes     |    
+    +----------+------------+            +--+---------+-------+
     |start container without|            |start container with|
     |MAC address            |            |assigned MAC address|
-    +-----------+-----------+            +------+-------------+
+    +----------+------------+            +-----+--------------+
                |                               |           
                |                   +-----------+--------+  
                |            No     | static IP in config|  

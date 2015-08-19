@@ -484,7 +484,7 @@ class DockerControl:
                                          network_mode = "none")
         container = self.dockerCli.create_container(image=image, name=name, command=command,
                                                     #domainname=domain, hostname=name, volumes = dVolumes,
-                                                    domainname=domain, hostname=name,
+                                                    domainname=domain, hostname=name, volumes = dVolumes,
                                                     detach=True, host_config = host_config)
         self.dockerCli.start(container=container.get('Id'))
         containerInfo = self.dockerCli.inspect_container(container=container.get('Id'))

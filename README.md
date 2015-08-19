@@ -335,3 +335,52 @@ and after a little bit over 5 minutes the environment is up and running:
     '{"status": "successfully created", "ip": "10.0.5.2", "mac": "de:ad:be:ef:05:02", "container": "col1", "service": "collector"}'
     '{"status": "successfully created", "ip": "10.0.6.2", "mac": "de:ad:be:ef:06:02", "container": "ctrl1", "service": "control"}'
     '{"status": "successfully created", "ip": "10.0.7.2", "mac": "de:ad:be:ef:07:02", "container": "webui1", "service": "webui"}'
+
+and the contrail status:
+
+    root@docker-dev:/etc/dockerstack# for i in cas1 conf1 ctrl1 col1 webui1
+    > do
+    > docker exec $i contrail-status
+    > done
+    == Contrail Database ==
+    supervisor-database:          active
+    contrail-database             active
+    contrail-database-nodemgr     active
+    kafka                         active
+
+    == Contrail Config ==
+    supervisor-config:            active
+    contrail-api:0                active
+    contrail-config-nodemgr       active
+    contrail-device-manager       active
+    contrail-discovery:0          active
+    contrail-schema               active
+    contrail-svc-monitor          active
+    ifmap                         active
+
+    == Contrail Support Services ==
+    supervisor-support-service:   active
+    rabbitmq-server               active
+
+    == Contrail Control ==
+    supervisor-control:           active
+    contrail-control              active
+    contrail-control-nodemgr      active
+    contrail-dns                  active
+    contrail-named                active
+
+    == Contrail Analytics ==
+    supervisor-analytics:         active
+    contrail-alarm-gen            active
+    contrail-analytics-api        active
+    contrail-analytics-nodemgr    active
+    contrail-collector            active
+    contrail-query-engine         active
+    contrail-snmp-collector       active
+    contrail-topology             active
+
+    == Contrail Web UI ==
+    supervisor-webui:             active
+    contrail-webui                active
+    contrail-webui-middleware     active
+

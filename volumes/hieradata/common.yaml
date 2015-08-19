@@ -31,6 +31,7 @@ registered_services:
   - os1
   puppet:
   - puppet1
+  - puppet1
   webui:
   - webui1
 services:

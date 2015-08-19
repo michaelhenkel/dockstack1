@@ -35,3 +35,67 @@ Application containers:
 
 10. webui:
  - Contrail webui
+
+The OpenStack compontens can be broken down into separate application containers but for this PoC it's just fine to have them all in one.
+A client and server component is used to manage the live cycle of the application containers. Based on the configuration file the application
+container can be created, removed, started and stopped on different Docker hosts.
+In the standard Docker setup IP addresses are not persistent, i.e. everytime a container is stopped and restarted or removed and recreated the IP address
+changes. In order to maintain IP address dnsmasq is used. Each container (besides the dnsmasq container itself) receives its IP address from the dnsmasq
+container and generates a DNS entry.
+
+               +-----------------------------+                
+               |                             |                
+               | has container static MAC/IP |                
+               | in config file?             +---------+      
+               |                             |         |      
+               +-------------+---------------+         |      
+                             |                         |      
+                             ^  No                     |      
+                   +---------+------------+            |      
+                   |                      |            |      
+                   | is container name in |            |      
+                +--+ dhcp lease file?     +--+         |      
+                |  |                      |  |         |      
+             No |  +----------------------+  | Yes     |      
+                |                            |         |      
+                ^                            ^         ^      
++---------------+---------+         +--------+---------+-----+
+|                         |         |                        |
+| start container without |         |  start container with  |
+| MAC address             |         |  assigned MAC address  |
+|                         |         |                        |
++---------------+---------+         +-----------+------------+
+                |                               |             
+                |                               ^             
+                |                   +-----------+------------+
+                |                   |                        |
+                |            No     | static IP in config    |
+                |         +---------+ file?                  |
+                |         |         |                        |
+                |         |         +-----------+------------+
+                |         |                     |             
+                |         ^                     | Yes         
+        +-------+---------+---+     +-----------+---------+   
+        |                     |     |                     |   
+        | run dhclient inside |     | configure static IP |   
+        | container           |     |                     |   
+        |                     |     +-----------+---------+   
+        +-------+-------------+                 |             
+                |                               |             
+                |                               |             
+         +------+------------+                  |             
+         |                   |                  |             
+         | retrieve assigned |                  |             
+         | IP and MAC        |                  |             
+         |                   |                  |             
+         +------+------------+                  |             
+                |                               |             
+                |                               |             
+                |    +-----------------+        |             
+                |    |                 |        |             
+                |    | update dns/dhcp |        |             
+                +---^+ file and reload <--------+             
+                     | dnsmasq         |                      
+                     |                 |                      
+                     +-----------------+                      
+ 

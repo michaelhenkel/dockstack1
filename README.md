@@ -128,6 +128,13 @@ The name of the service must match the docker image name:
     openstack           latest              cea138c40256        13 days ago         636.3 MB
     galera              latest              1db2424aaead        13 days ago         481.6 MB
 
+The creation process has several steps:
+
+1. determine network information for a container
+2. start the container
+3. apply network configuration
+4. create puppet manifest for container
+
 In the standard Docker setup IP addresses are not persistent, i.e. everytime a container is stopped and restarted or removed and recreated the IP address
 changes. In order to maintain IP address dnsmasq is used. Each container (besides the dnsmasq container itself) receives its IP address from the dnsmasq
 container and generates a DNS entry.

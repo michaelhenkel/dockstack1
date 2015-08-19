@@ -59,12 +59,12 @@ container and generates a DNS entry.
              No |  +----------------------+  | Yes     |      
                 |                            |         |      
                 |                            |         v      
-  +---------------+---------+         +--------+---------+-----+
-  |                         |         |                        |
-  | start container without |         |  start container with  |
-  | MAC address             |         |  assigned MAC address  |
-  |                         |         |                        |
-  +---------------+---------+         +-----------+------------+
+     +---------------+---------+         +--------+---------+-----+
+     |                         |         |                        |
+     | start container without |         |  start container with  |
+     | MAC address             |         |  assigned MAC address  |
+     |                         |         |                        |
+     +---------------+---------+         +-----------+------------+
                 |                               |             
                 |                               v             
                 |                   +-----------+------------+

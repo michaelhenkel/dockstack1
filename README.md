@@ -50,7 +50,7 @@ container and generates a DNS entry.
                |                             |         |      
                +-------------+---------------+         |      
                              |                         |      
-                             ^  No                     |      
+                             v  No                     |      
                    +---------+------------+            |      
                    |                      |            |      
                    | is container name in |            |      
@@ -58,7 +58,7 @@ container and generates a DNS entry.
                 |  |                      |  |         |      
              No |  +----------------------+  | Yes     |      
                 |                            |         |      
-                ^                            ^         ^      
+                v                            v         v      
 +---------------+---------+         +--------+---------+-----+
 |                         |         |                        |
 | start container without |         |  start container with  |
@@ -66,7 +66,7 @@ container and generates a DNS entry.
 |                         |         |                        |
 +---------------+---------+         +-----------+------------+
                 |                               |             
-                |                               ^             
+                |                               v             
                 |                   +-----------+------------+
                 |                   |                        |
                 |            No     | static IP in config    |
@@ -74,7 +74,7 @@ container and generates a DNS entry.
                 |         |         |                        |
                 |         |         +-----------+------------+
                 |         |                     |             
-                |         ^                     | Yes         
+                |         v                     v Yes         
         +-------+---------+---+     +-----------+---------+   
         |                     |     |                     |   
         | run dhclient inside |     | configure static IP |   
@@ -94,7 +94,7 @@ container and generates a DNS entry.
                 |    +-----------------+        |             
                 |    |                 |        |             
                 |    | update dns/dhcp |        |             
-                +---^+ file and reload <--------+             
+                +--->+ file and reload +<-------+             
                      | dnsmasq         |                      
                      |                 |                      
                      +-----------------+                      

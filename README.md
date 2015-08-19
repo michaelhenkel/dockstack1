@@ -58,7 +58,7 @@ container and generates a DNS entry.
                 |  |                      |  |         |      
              No |  +----------------------+  | Yes     |      
                 |                            |         |      
-                v                            v         v      
+                |                            |         v      
 +---------------+---------+         +--------+---------+-----+
 |                         |         |                        |
 | start container without |         |  start container with  |

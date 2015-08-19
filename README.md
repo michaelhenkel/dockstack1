@@ -52,7 +52,7 @@ container and generates a DNS entry.
                   | is containeroname in |            |    
                +--+ dhcp lease file?     +--+         |    
                |  +----------------------+  |         |    
-            No |                            | Yes     |    
+            No |                            | Yes     v    
    +--------------+--------+            +---+---------+------+
    |start container without|            |start container with|
    |MAC address            |            |assigned MAC address|

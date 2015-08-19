@@ -37,8 +37,81 @@ Application containers:
  - Contrail webui
 
 The OpenStack compontens can be broken down into separate application containers but for this PoC it's just fine to have them all in one.
-A client (dockstack-client) and server (dockstack-server) component is used to manage the live cycle of the application containers. Based on the configuration file the application
-container can be created, removed, started and stopped on different Docker hosts.
+A client (dockstack-client) and server (dockstack-server) component is used to manage the live cycle of the application containers. 
+Based on the configuration file the application container can be created, removed, started and stopped on different Docker hosts.
+The creation process is iniated by the dockstack-client and executed by the docker-server. Setup and configuration information are stored
+in an environment file using the yaml data structure. The file contains generic and container specific information:
+
+    common:
+      dnsServer: 10.0.0.1
+      domain: endor.lab
+      galera_password: password
+      haproxy_password: password
+      haproxy_user: user
+      keystone_admin_password: password
+      keystone_admin_tenant: admin
+      keystone_admin_token: token
+      keystone_admin_user: admin
+      puppetServer: puppet1
+      vip: 10.0.0.254
+      vip_mask: 16
+      vip_name: vip
+    registered_services:
+      cassandra: []
+      collector: []
+      config: []
+      control: []
+      dns: []
+      galera: []
+      haproxy: []
+      openstack: []
+      puppet: []
+      webui: []
+    services:
+      cassandra:
+        cas1:
+          host: 192.168.99.2
+      collector:
+        col1:
+          host: 192.168.99.2
+      config:
+        conf1:
+          host: 192.168.99.2
+      control:
+        ctrl1:
+          host: 192.168.99.2
+      dns:
+        dns1:
+          gateway: 10.0.0.100
+          host: 192.168.99.2
+          ipaddress: 10.0.0.1/16
+          macAddress: de:ad:be:ef:ba:11
+        dns2:
+          gateway: 10.0.0.100
+          host: 192.168.99.2
+          ipaddress: 10.0.0.2/16
+          macAddress: de:ad:be:ef:ba:12
+      galera:
+        gal1:
+          host: 192.168.99.2
+      haproxy:
+        ha1:
+          host: 192.168.99.2
+        ha2:
+          host: 192.168.99.2
+      openstack:
+        os1:
+          host: 192.168.99.2
+      puppet:
+        puppet1:
+          host: 192.168.99.2
+        puppet2:
+          host: 192.168.99.2
+      webui:
+        webui1:
+          host: 192.168.99.2
+
+
 In the standard Docker setup IP addresses are not persistent, i.e. everytime a container is stopped and restarted or removed and recreated the IP address
 changes. In order to maintain IP address dnsmasq is used. Each container (besides the dnsmasq container itself) receives its IP address from the dnsmasq
 container and generates a DNS entry.
@@ -81,7 +154,7 @@ container and generates a DNS entry.
 
 
 Instead of using Dockers virtual switching stack (Linux bridge) OpenVswitch is used. The dockstack-server creates network namespaces per container
-and links a it to an OVS bridge. All namespace operations are performed using the pyroute2 library.
+and links it to an OVS bridge using a pair of veth interfaces. All namespace operations are performed using the pyroute2 library.
 Communication between two Docker hosts can be done by linking the OVS of the hosts through VxLAN:
 
     +-------------------------------------------+ +-------------------------------------------+
@@ -101,7 +174,7 @@ Communication between two Docker hosts can be done by linking the OVS of the hos
     | | |1eth1 |      |2eth1 |      |3eth1 |  | | | | |4eth1 |      |5eth1 |      |6eth1 |  | |
     | | +------+      +------+      +------+  | | | | +------+      +------+      +------+  | |
     | |                                       | | | |                                       | |
-    | | OVS br0      +------+                 | | | |               -------+        OVC br0 | |
+    | | OVS br0      +------+                 | | | |               -------+        OVS br0 | |
     | |              |VxLAN1+---------------------------------------+VXLAN2|                | |
     | |              |      |                 | | | |               |      |                | |
     | +--------------+------+-----------------+ | | +---------------+------+----------------+ |
@@ -111,4 +184,5 @@ Communication between two Docker hosts can be done by linking the OVS of the hos
     +----------------+-+----+-------------------+ +-----------------+---+--+------------------+
                        |                                                |                      
                        +------------------------------------------------+                      
+
 

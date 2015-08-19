@@ -36,43 +36,43 @@ registered_services:
 services:
   cassandra:
     cas1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   collector:
     col1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   config:
     conf1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   control:
     ctrl1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   dns:
     dns1:
       gateway: 10.0.0.100
-      host: 192.168.1.102
+      host: 192.168.99.2
       ipaddress: 10.0.0.1/16
       macAddress: de:ad:be:ef:ba:11
     dns2:
       gateway: 10.0.0.100
-      host: 192.168.1.102
+      host: 192.168.99.2
       ipaddress: 10.0.0.2/16
       macAddress: de:ad:be:ef:ba:12
   galera:
     gal1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   haproxy:
     ha1:
-      host: 192.168.1.102
+      host: 192.168.99.2
     ha2:
-      host: 192.168.1.102
+      host: 192.168.99.2
   openstack:
     os1:
-      host: 192.168.1.102
+      host: 192.168.99.2
   puppet:
     puppet1:
-      host: 192.168.1.102
+      host: 192.168.99.2
     puppet2:
-      host: 192.168.1.102
+      host: 192.168.99.2
   webui:
     webui1:
-      host: 192.168.1.102
+      host: 192.168.99.2

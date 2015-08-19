@@ -599,67 +599,43 @@ class NameSpace:
         nsp.release()
         
 
+import socket
+import fcntl
+import struct
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
 parser = argparse.ArgumentParser(description='updates hiera file')
-parser.add_argument('--nSname', metavar='f',
-                   help='name space name')
-parser.add_argument('--action', metavar='f',
-                   help='list/create/remove')
-parser.add_argument('--ifacePair', metavar='f',
-                   help='interface pair name')
 parser.add_argument('--ipaddress', metavar='f',
-                   help='peer interface ip address')
-parser.add_argument('--cmd', metavar='f',
-                   help='exec cmd in ns')
-parser.add_argument('--macAddress', metavar='f',
-                   help='macAdress of interface')
+                   help='ip address to listen on')
+parser.add_argument('--interface', metavar='f',
+                   help='interface to listen on')
+parser.add_argument('--port', metavar='f',
+                   help='port to listen on')
 args = parser.parse_args()
-action = args.action
-if args.nSname:
-    nSname = args.nSname
-if args.ifacePair:
-    iface, ifacePeer = args.ifacePair.split(':')
+
 if args.ipaddress:
-    ipaddress = args.ipaddress
-if args.cmd:
-    cmd = args.cmd
-if args.macAddress:
-    macAddress = args.macAddress
+    HOST = args.ipaddress
 
-if action == 'listNS': 
-    nameSpace=NameSpace().list()
-if action == 'createNS':
-    nameSpace=NameSpace(nSname).create()
-if action == 'removeNS':
-    nameSpace=NameSpace(nSname).remove()
-if action == 'createIfPair':
-    nameSpace=NameSpace(nSname).create(iface,ifacePeer)
-if action == 'removeIfPair':
-    nameSpace=NameSpace(nSname).remove(iface,ifacePeer)
-if action == 'addIp':
-    nameSpace=NameSpace(nSname).addIp(ifacePeer, ipaddress)
-if action == 'exec':
-    nameSpace=NameSpace(nSname).execCmd(cmd)
+if args.interface:
+    HOST = get_ip_address(args.interface)
 
-if action == 'aio':
-    nameSpace=NameSpace(nSname).remove()
-    #nameSpace=NameSpace(nSname).create()
-    #time.sleep(2)
-    NameSpace(nSname).create(iface,ifacePeer)
-    #if args.macAddress:
-    #    nameSpace.createInterfacePair(iface,ifacePeer,macAddress)
-    #else:
-    #    nameSpace=NameSpace(nSname).createInterfacePair(iface,ifacePeer)
-    #if args.ipaddress:
-    #    nameSpace.addIp(ifacePeer, ipaddress)
-    #if args.cmd:
-    #    nameSpace.execCmd(cmd)
+if args.port:
+    PORT = args.port
+else:
+    PORT = 3288
+
+if not args.ipaddress and not args.interface:
+    HOST = get_ip_address('eth0')
 
 if __name__ == "__main__":
-    HOST, PORT = "192.168.1.102", 3288
     server_address = (HOST, PORT)
     httpd = HTTPServer(server_address, Handler)
     print "Serving at: http://%s:%s" % (HOST, PORT)
     httpd.serve_forever()
-
-    #server = SocketServer.TCPServer((HOST, PORT), MyTCPHandler)
-    #server.serve_forever()

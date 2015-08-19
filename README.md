@@ -384,3 +384,36 @@ and the contrail status:
     contrail-webui                active
     contrail-webui-middleware     active
 
+openstack services:
+
+    root@docker-dev:/etc/dockerstack# glance image-list
+    +----+------+-------------+------------------+------+--------+
+    | ID | Name | Disk Format | Container Format | Size | Status |
+    +----+------+-------------+------------------+------+--------+
+    +----+------+-------------+------------------+------+--------+
+    root@docker-dev:/etc/dockerstack# keystone tenant-list
+    WARNING: Bypassing authentication using a token & endpoint (authentication credentials are being ignored).
+    +----------------------------------+----------+---------+
+    |                id                |   name   | enabled |
+    +----------------------------------+----------+---------+
+    | ad6d9f7c02c1433bbc56c7429311630b |  admin   |   True  |
+    | bcb34f17183d4ead868d73e2e35b915f | services |   True  |
+    +----------------------------------+----------+---------+
+    root@docker-dev:/etc/dockerstack# nova list
+    +----+------+--------+------------+-------------+----------+
+    | ID | Name | Status | Task State | Power State | Networks |
+    +----+------+--------+------------+-------------+----------+
+    +----+------+--------+------------+-------------+----------+
+    root@docker-dev:/etc/dockerstack# glance image-list
+    +----+------+-------------+------------------+------+--------+
+    | ID | Name | Disk Format | Container Format | Size | Status |
+    +----+------+-------------+------------------+------+--------+
+    +----+------+-------------+------------------+------+--------+
+    root@docker-dev:/etc/dockerstack# neutron net-list
+    +--------------------------------------+-------------------------+---------+
+    | id                                   | name                    | subnets |
+    +--------------------------------------+-------------------------+---------+
+    | 8b64eba7-9707-4dc6-ae7a-98c4117ec159 | ip-fabric               |         |
+    | e9d13e92-4d8a-4ca1-ab7a-9bfa440a078c | __link_local__          |         |
+    | 3e66a29c-78a0-4ee1-bf4a-2df31c9474dd | default-virtual-network |         |
+    +--------------------------------------+-------------------------+---------+

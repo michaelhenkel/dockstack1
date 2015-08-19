@@ -264,4 +264,59 @@ Similiar examples are the cassandra seeds, zookeeper server, control clients in 
 The configuration updates are achieved by the executing a puppet kick at the end of each puppet module.
 With that the configuration of each application container is dynamic, stays up-to-date and only contains
 necessary configuration items.
+In a later step the haproxy configuration will have to be modified to take the updated container out of the 
+balancing after all tcp sessions are gone.
 
+It is important that the first set of containers are created in the right order as their functions depends 
+on each other. Adding containers for redundancy doesn't have to follow a certain order:
+
+1. dns
+2. puppet
+3. haproxy
+4. galera
+5. openstack
+6. cassandra
+7. config
+8. collector
+9. control
+10. webui
+
+The dockstack-server can be started without any options. It will then pickup the Ip of eth0 and port 3288 to listen on. The dockstack-client needs a an action and a container name.
+Initially there are no containers running on the system:
+
+    root@docker-dev:/etc/dockerstack# docker ps -a
+    CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
+
+The server must be started:
+
+    root@docker-dev:/etc/dockerstack# ./dockstack-server.py
+    Serving at: http://192.168.99.2:3288
+
+and the client can create the first container:
+
+    root@docker-dev:/etc/dockerstack# ./dockstack-client.py --action create --name dns1
+    root@docker-dev:/etc/dockerstack#
+
+and the output on the server:
+
+    root@docker-dev:/etc/dockerstack# ./dockstack-server.py
+    Serving at: http://192.168.99.2:3288
+    '{"status": "successfully created", "ip": "10.0.0.1/16", "mac": "de:ad:be:ef:ba:11", "container": "dns1", "service": "dns"}'
+
+and the update in the yaml environment file:
+
+    registered_services:
+      cassandra: []
+      collector: []
+      config: []
+      control: []
+      dns:
+      - dns1
+
+now starting the remaining containers (giving each container 30 seconds to configure its applications):
+
+    root@docker-dev:/etc/dockerstack# for i in puppet1 ha1 gal1 os1 cas1 conf1 col1 ctrl1 webui1
+    > do
+    > ./dockstack-client.py --action create --name $i
+    > sleep 30
+    > done

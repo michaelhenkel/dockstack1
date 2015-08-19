@@ -41,9 +41,9 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not os.path.isdir('/var/run/netns'):
            os.makedirs('/var/run/netns')
-        logging.basicConfig(level=logging.INFO)
-        logging.info("======= POST STARTED =======")
-        logging.info(self.headers)
+        #logging.basicConfig(level=logging.INFO)
+        #logging.info("======= POST STARTED =======")
+        #logging.info(self.headers)
         self.data_string = self.rfile.read(int(self.headers['Content-Length']))
         data = json.loads(self.data_string)
         containerObject = ContainerObject(data)
@@ -71,6 +71,11 @@ class Handler(BaseHTTPRequestHandler):
                 puppet = Puppet(containerObject)
                 puppet.configPuppet()
             Puppet(containerObject).registerContainer('add')
+            pprint(json.dumps({'container':containerObject.name,
+                                 'service':containerObject.type,
+                                 'ip':containerObject.ip,
+                                 'mac':containerObject.mac,
+                                 'status':'successfully created'}))
             self.request.sendall(result)
         if self.path == '/remove':
             dockerControl=DockerControl(containerObject).remove()
@@ -96,7 +101,6 @@ class ContainerObject:
         self.data = data
         self.name = data.keys()[0]
         self.type = data[self.name]['type']
-        print self.type
         self.domain = data[self.name]['domain']
         if data[self.name]['props'].get('ipaddress'):
             self.ip = data[self.name]['props']['ipaddress']
@@ -148,7 +152,6 @@ class Puppet:
         copy(CONTAINER_VOL_DIR + '/hieradata/common.yaml', CONTAINER_VOL_DIR + '/' + self.containerName + '/hieradata/common.yaml')
 
     def registerContainer(self, action):
-        print 'registering service: %s ' % (self.containerObject.name)
         envFile = CONTAINER_VOL_DIR + '/hieradata/common.yaml'    
         service = self.containerObject.type
         node = self.containerObject.name.encode('ascii','ignore')
@@ -175,7 +178,6 @@ class Puppet:
             if containerFqdn in line:
                 lineNumber = counter
             counter = counter + 1
-        print 'linenumber: %s' % lineNumber
         if lineNumber == '':
             if action == 'add':
                 if self.containerType == 'haproxy':
@@ -226,7 +228,6 @@ class Puppet:
                     siteFileList[lineNumber+2] = "  class { '::mymod::ka': }"
                     siteFileList[lineNumber+3] = "}"
                 if action == 'remove':
-                    print 'removing container'
                     siteFileList.pop(lineNumber)
                     siteFileList.pop(lineNumber)
                     siteFileList.pop(lineNumber)
@@ -312,9 +313,7 @@ class Puppet:
         f.close()
      
     def update(self):
-        print 'update puppet %s' % self.containerObject.type
         if self.targetContainerObject.type != 'puppet' and self.targetContainerObject.type != 'dns':
-            print 'update puppet'
             cmd = 'service puppet stop'
             dockerControl = DockerControl(self.targetContainerObject).runCmd(cmd)
             cmd = 'rm -rf /var/lib/puppet/ssl'
@@ -349,13 +348,11 @@ class Dns:
         with open(dhcpFile,'r') as dnsFile:
             for line in dnsFile:
                 if self.targetContainerName in line:
-                    print 'line: %s' % line
                     dnsEntryDict = dict({'macAddress':line.split(',')[0],'container':line.split(',')[1],'ipAddress':line.split(',')[2]})
                     return json.dumps(dnsEntryDict)
         return json.dumps('result:No entry')
 
     def update(self):
-        print 'updating dns entry'
         dnsContainer = self.containerObject.name
         dhcpFile = CONTAINER_CONF_DIR + '/dnsmasq.d/docker/dhcp/docker-dhcp-file'
         dnsFile = CONTAINER_CONF_DIR +  '/dnsmasq.d/docker/dns/docker-dns-file'
@@ -440,7 +437,6 @@ class DockerControl:
         execKey = self.dockerCli.exec_create(containerId, cmd)
         execResult = self.dockerCli.exec_start(execKey['Id'])
         dockerInfo = self.dockerCli.exec_inspect(execKey['Id'])
-        print execResult
         return execResult
 
 
@@ -573,7 +569,6 @@ class NameSpace:
         ns.link('set', index=idx, net_ns_fs=self.containerName, ifname='eth0')
         ns.link('set', index=idx, net_ns_fs=self.containerName, state='up')
         if hasattr(self,'containerGateway'):
-            print self.containerGateway
             request = {"dst": "0.0.0.0/0",
                        "gateway": self.containerGateway}
             ns.route("add", **IPRouteRequest(request))
@@ -581,7 +576,6 @@ class NameSpace:
         subprocess.call(["ovs-vsctl", "add-port", "br0", iface])
         dockerControl = DockerControl(self.containerObject)
         if hasattr(self,'containerDhcp'):
-            print 'running dhcp'
             dhcpCmd = 'dhclient eth0'
             dockerControl.runCmd(dhcpCmd)
         addressCmd = 'ip address show dev eth0'

@@ -139,7 +139,6 @@ if __name__ == "__main__":
             else:
                 dnsServer = args.name
                 dnsContainerObject = ContainerObject(dnsServer).create()
-                pprint(dnsContainerObject)
                 result = SendHTTPData(data=dnsContainerObject,method='POST',HOST=dnsContainerObject[dnsServer]['props']['host'],PORT=PORT,action='updateDns').send()
            # else:
 
@@ -148,7 +147,6 @@ if __name__ == "__main__":
                 for puppetServer in containerObject[args.name]['puppet'].keys():
                     puppetContainerObject = ContainerObject(puppetServer).create()
                     puppetContainerObject[puppetServer]['targetContainer']= containerObject
-                    pprint(puppetContainerObject)
                     result = SendHTTPData(data=puppetContainerObject,method='POST',HOST=puppetContainerObject[puppetServer]['props']['host'],PORT=PORT,action='updatePuppet').send()
 
 
@@ -159,7 +157,6 @@ if __name__ == "__main__":
                 for puppetServer in containerObject[args.name]['puppet'].keys():
                     puppetContainerObject = ContainerObject(puppetServer).create()
                     puppetContainerObject[puppetServer]['targetContainer']= containerObject
-                    pprint(puppetContainerObject)
                     #result = SendHTTPData(data=puppetContainerObject,method='POST',host=puppetContainerObject[puppetServer]['props']['host'],action='syncPuppet').send()
      
             #print result

@@ -208,4 +208,49 @@ Communication between two Docker hosts can be done by linking the OVS of the hos
                        |                                                |                      
                        +------------------------------------------------+                      
 
+The final step is the creation of the puppet manifest. A manifest for a set of containers looks like this:
 
+    node 'gal1.endor.lab' {
+      class { '::mymod::gal': }
+    }
+    node 'ha1.endor.lab' {
+      class { '::mymod::ha': }
+      class { '::mymod::ka': }
+    }
+    node 'os1.endor.lab' {
+      class { '::mymod::os': }
+    }
+    node 'cas1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::database': }
+    }
+    node 'conf1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::config': }
+    }
+    node 'col1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::collector': }
+    }
+    node 'ctrl1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::control': }
+    }
+    node 'webui1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::webui': }
+    }
+    node 'compute1.endor.lab' {
+      class { '::contrail::common': }
+      class { '::contrail::compute': }
+    }
+
+When the container is up and running the puppet agents begins to pull information from the puppet container and start to configure
+the applications based on the environment file from above.
+So the environment file has three functions: 
+
+1. maintain environment configuration
+2. track running containers
+3. maintain container application configuration information
+
+The puppet modules are written in a way that 

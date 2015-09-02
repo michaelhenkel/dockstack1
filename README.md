@@ -39,7 +39,7 @@ Application containers:
 The OpenStack compontens can be broken down into separate application containers but for this PoC it's just fine to have them all in one.
 A client (dockstack-client) and server (dockstack-server) component is used to manage the live cycle of the application containers. 
 Based on the configuration file the application container can be created, removed, started and stopped on different Docker hosts.
-The creation process is iniated by the dockstack-client and executed by the docker-server. Setup and configuration information are stored
+The creation process is iniated by the dockstack-client and executed by the dockstack-server. Setup and configuration information are stored
 in an environment file using the yaml data structure. The file contains generic and container specific information:
 
     common:

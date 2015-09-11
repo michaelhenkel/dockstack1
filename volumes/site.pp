@@ -20,11 +20,3 @@ node 'col1.endor.lab' {
   class { '::contrail::common': }
   class { '::contrail::collector': }
 }
-node 'ctrl1.endor.lab' {
-  class { '::contrail::common': }
-  class { '::contrail::control': }
-}
-node 'webui1.endor.lab' {
-  class { '::contrail::common': }
-  class { '::contrail::webui': }
-}

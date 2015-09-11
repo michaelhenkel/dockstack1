@@ -19,8 +19,7 @@ registered_services:
   - col1
   config:
   - conf1
-  control:
-  - ctrl1
+  control: []
   dns:
   - dns1
   galera:
@@ -31,49 +30,47 @@ registered_services:
   - os1
   puppet:
   - puppet1
-  - puppet1
-  webui:
-  - webui1
+  webui: []
 services:
   cassandra:
     cas1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   collector:
     col1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   config:
     conf1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   control:
     ctrl1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   dns:
     dns1:
       gateway: 10.0.0.100
-      host: 192.168.99.2
+      host: 192.168.1.48
       ipaddress: 10.0.0.1/16
       macAddress: de:ad:be:ef:ba:11
     dns2:
       gateway: 10.0.0.100
-      host: 192.168.99.2
+      host: 192.168.1.48
       ipaddress: 10.0.0.2/16
       macAddress: de:ad:be:ef:ba:12
   galera:
     gal1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   haproxy:
     ha1:
-      host: 192.168.99.2
+      host: 192.168.1.48
     ha2:
-      host: 192.168.99.2
+      host: 192.168.1.48
   openstack:
     os1:
-      host: 192.168.99.2
+      host: 192.168.1.48
   puppet:
     puppet1:
-      host: 192.168.99.2
+      host: 192.168.1.48
     puppet2:
-      host: 192.168.99.2
+      host: 192.168.1.48
   webui:
     webui1:
-      host: 192.168.99.2
+      host: 192.168.1.48
